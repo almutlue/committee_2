@@ -1,0 +1,875 @@
+---
+title: "Batch effects in scRNA-seq data"
+subtitle: "Committee meeting"
+author: "Almut Lütge"
+institute: "DMLS - University of Zürich"
+date: " `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: [hygge, metropolis_mod.css, metropolis-fonts]
+    lib_dir: libs
+    nature:
+      ratio: '16:10'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+    self_contained: true
+  always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, htmltools.preserve.raw = FALSE)
+```
+
+class: inverse, center, middle
+
+# Batch effects
+
+---
+class: inverse, center
+
+# Batch effects
+
+&nbsp;
+
+.pull-left[
+```{r echo=FALSE, out.height="80%", out.width="80%"}
+fig_path <- "/home/almut/Dokumente/Phd/presentation/committee_2/figures"
+dir_path <- "/home/almut/Dokumente/Phd/presentation/committee_2/"
+knitr::include_graphics(paste0(fig_path, "/batch1.png"))
+```
+]
+
+--
+
+.pull-right[
+```{r echo=FALSE, out.height="80%", out.width="80%"}
+knitr::include_graphics(paste0(fig_path, "/batch2.png"))
+```
+]
+
+--
+
+```{r echo=FALSE, out.height="60%", out.width="60%"}
+knitr::include_graphics(paste0(fig_path, "/batch3.png"))
+```
+---
+class: center
+# Sinergia: Lung fibroblast from different patients
+
+.pull-left[
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics(paste0(fig_path, "/sin_celltype.png"))
+```
+]
+
+--
+.pull-right[
+<br>
+```{r echo=FALSE, out.height="87%", out.width="87%"}
+knitr::include_graphics(paste0(fig_path, "/sin_patient.png"))
+```
+]
+---
+class: center, middle, inverse
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics(paste0(fig_path, "/cellmixs_preprint.png"))
+```
+
+---
+class: center, inverse
+
+# Project overview 
+
+```{r echo=FALSE, out.height="120%", out.width="120%"}
+knitr::include_graphics(paste0(fig_path, "/Current_work_Benchmark_mixing_metrics_6.png"))
+```
+
+---
+class: center, inverse
+
+# Project overview 
+
+```{r echo=FALSE, out.height="120%", out.width="120%"}
+knitr::include_graphics(paste0(fig_path, "/Current_work_Benchmark_mixing_metrics_5.png"))
+```
+
+---
+class: center, inverse
+
+# Project overview 
+
+```{r echo=FALSE, out.height="120%", out.width="120%"}
+knitr::include_graphics(paste0(fig_path, "/Current_work_Benchmark_mixing_metrics_4.png"))
+```
+
+---
+class: center, inverse
+
+# Project overview 
+
+```{r echo=FALSE, out.height="120%", out.width="120%"}
+knitr::include_graphics(paste0(fig_path, "/Current_work_Benchmark_mixing_metrics_3.png"))
+```
+
+---
+class: center, inverse
+
+# Project overview 
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics(paste0(fig_path, "/Current_work_Benchmark_mixing_metrics_2.png"))
+```
+
+---
+class: center, inverse
+
+# Project overview 
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics(paste0(fig_path, "/Current_work_Benchmark_mixing_metrics_1.png"))
+```
+
+---
+class: center, inverse
+
+# Project overview 
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics(paste0(fig_path, "/Current_work_Benchmark_mixing_metrics.png"))
+```
+
+---
+class: inverse, center, middle
+
+# Batch characterization
+
+---
+
+# Batch characterization
+
+&nbsp;
+
+.pull-left[
++ 7 datasets  
++ 9 batch effects  
++ *patient, protocol, storage*
+]
+
+--
+
+.pull-right[
++ **Variance partitioning**
++ **logFC** distribution and correlation
++ DE genes/overlap
+]
+
+&nbsp;
+--
+
+### Variance partition
+
+### $Y_g = \mu + X_{p}\alpha_{pg} + X_{b}\beta_{bg} + X_{p:b} \gamma_{(p:b)g} + \epsilon_g$
+
+&nbsp;
+
+$Y_g$: normalized expression gene g  
+$\mu$: baseline expression  
+$X_{p}$, $X_{b}$, $X_{p:b}$: design matrices for the (random) cell types, batches and interactions effect  
+$\alpha_{pg} \sim N(0, \sigma^2_{pg})$,..: corresponding random effects  
+$\epsilon_i \sim N(0, \sigma^2_{g})$ corresponding errors  
+
+---
+class: center
+
+# Percent variance explained by ..:
+
+```{r echo=FALSE, out.height="60%", out.width="60%"}
+knitr::include_graphics(paste0(fig_path, "/tern2.png"))
+```
+
+---
+class: center
+
+# Log fold change distributions
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics(paste0(fig_path, "/logFC2.png"))
+```
+
+
+---
+class: inverse, center, middle
+
+# Metrics
+
+---
+class: center, inverse
+
+# Metrics
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/metrics2.png")
+```
+
+---
+class: center, inverse
+
+# Metrics
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/metrics1.png")
+```
+
+---
+class: center, inverse
+
+# Metrics
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/metrics.png")
+```
+
+---
+class: center
+
+# Cell-specific Mixing Score (cms)
+
+--
+.pull-left[
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/cms_tsne_X-1.png")
+```
+]
+
+--
+
+.pull-right[
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/cms_dist_X-1.png")
+```
+]
+
+
+---
+class: center
+
+# Cell-specific Mixing Score (cms)
+
+--
+.pull-left[
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/cms_tsne_Y-1.png")
+```
+]
+
+--
+
+.pull-right[
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/cms_dist_Y-1.png")
+```
+]
+
+---
+class: center
+# Sinergia: Lung fibroblast from different patients
+
+<br>
+<br>
+
+.pull-left[
+```{r echo=FALSE, out.height="80%", out.width="80%"}
+knitr::include_graphics(paste0(fig_path, "/sin_patient.png"))
+```
+]
+
+--
+
+.pull-right[
+<br>
+```{r echo=FALSE, out.height="95%", out.width="95%"}
+knitr::include_graphics(paste0(fig_path, "/sin_cms.png"))
+```
+]
+
+---
+class: center
+# Sinergia: Lung fibroblast from different patients
+
+<br>
+<br>
+
+.pull-left[
+```{r echo=FALSE, out.height="80%", out.width="80%"}
+knitr::include_graphics(paste0(fig_path, "/sin_harmony.png"))
+```
+]
+
+--
+.pull-right[
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics(paste0(fig_path, "/sin_harmony_cms.png"))
+```
+]
+---
+class: inverse, center, middle
+
+# Benchmark
+
+---
+class: center
+
+# Task 1: Batch characteristics
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+### *Aim: Test whether metrics reflect batch strength across datasets*
+
+--
+
+Spearman correlation of metrics with surrogates of batch strength (e.g., PVE-Batch and proportion of DE genes between batches) across datasets
+
+
+---
+class: center
+
+# Batch characteristics
+```{r echo=FALSE,warning=FALSE, message=FALSE, fig.width=11, fig.height = 8}
+library(ggplot2)
+library(scran)
+library(dplyr)
+library(hrbrthemes)
+
+theme_axis <- theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 14,
+                    strip_text_size = 14,
+                    plot_margin = margin(1, 1, 1, 1),
+                    base_size = 12) +
+        theme(
+            legend.position="right",
+            plot.title = element_blank(),
+            axis.text.x = element_text(size=14),
+            panel.grid.major = element_blank(),
+            panel.spacing = unit(1, "lines")
+        )
+
+met_char <- readRDS("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figure_obj/char_task1.rds")
+met_char <- met_char + theme_ipsum(base_family = 'Helvetica')
+met_char$layers[[2]]$aes_params$size <- 3.5
+
+p_task1 <- met_char + 
+  theme_axis +
+  xlab('mean PVE-Batch') +
+  ylab('scaled metric score') +
+  guides(linetype=guide_legend(keywidth = 3, keyheight = 1)) +
+  scale_linetype_discrete("characteristics", labels = c("DE genes", "PVE-Batch")) 
+
+p_task1
+```
+
+---
+class: center
+
+# Task 2: Batch label permutation
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+### *Aim: Negative control and test whether metrics scale with randomness*
+
+--
+
+Spearman correlation of metrics with the percentage of randomly permuted batch label 
+
+---
+class: center
+
+# Batch label permutation
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(plotly)
+f <- paste0("figure_obj/random_plotly.html")
+
+htmltools::tags$iframe(
+    src=f,
+    width="98%",
+    height="550",
+    scrolling="no",
+    seamless="seamless",
+    frameBorder="0"
+  )
+
+# p <- readRDS(paste0("figure_obj/random_plotly.rds"))
+# ggplotly(p)
+
+```
+---
+class: center
+
+# Batch label permutation
+<br>
+
+```{r echo=FALSE,warning=FALSE, message=FALSE, fig.width=12, fig.height = 6.5}
+
+random_res_all <- readRDS("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figure_obj/random_csf_patient_random_all.rds")
+random_res_all <- random_res_all + theme_ipsum(base_family = 'Helvetica')
+
+p2 <- random_res_all +
+  xlab("% random batch label") +
+  theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 18,
+                    strip_text_size = 18,
+                    plot_margin = margin(1, 1, 1, 1),
+                    base_size = 14) +
+  theme(axis.text.x = element_text(size=14),
+        axis.text.y = element_text(size=14),
+            plot.title = element_blank())
+
+p2$data$metric <- recode(p2$data$metric, cms.kmin80 = "cms_kmin", cms.bmin80 = "cms_bmin",
+       cms.batch = "cms_default", graph_connectivity = "graph", kbet = "kBet")
+
+p2$data$metric2 <- recode(p2$data$metric2, cms.kmin80 = "cms_kmin", cms.bmin80 = "cms_bmin",
+       cms.batch = "cms_default", graph_connectivity = "graph", kbet = "kBet")
+p2$facet$params$ncol <- 6
+
+
+p2
+```
+
+---
+class: center
+
+# Task 3: Scaling and detection limits
+<br>
+<br>
+<br>
+
+### *Aim: Test whether metrics scale with (synthetic) batch strength; Estimate lower limit of batch detection*
+
+--
+
+Spearman correlation of metrics with the batch logFC in simulation series on the same dataset; Minimal batch logFC that is recognized from the metrics as batch effect 
+
+---
+class: 
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+f <- "figure_obj/batch_size_plotly.html"
+
+htmltools::tags$iframe(
+    src=f,
+    width="100%", 
+    height="550",
+    scrolling="no", 
+    seamless="seamless", 
+    frameBorder="0"
+  )
+```
+
+---
+class: center
+
+# Scaling and Sensitivity
+```{r echo=FALSE,warning=FALSE, message=FALSE, fig.width=9, fig.height = 8}
+
+sim_scal_dist <- readRDS("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figure_obj/scaling_pbmc2_media.rds")
+sim_scal_dist <- sim_scal_dist + theme_ipsum(base_family = 'Helvetica')
+sim_scal_dist$layers[[3]]$aes_params$size <- 3.5
+
+p_dist <- sim_scal_dist + 
+  xlab("batch logFC factor") +
+  theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 17,
+                    plot_margin = margin(1, 1, 1, 1),
+                    strip_text_size = 16,
+                    base_size = 14) +
+  theme(axis.text.x = element_text(size=14),
+        axis.text.y = element_text(size=14),
+            plot.title = element_blank())
+
+p_dist$data$metric <- recode(p_dist$data$metric, cms.kmin = "cms_kmin", cms.bmin = "cms_bmin",
+       cms.batch_id = "cms_default", graph.connectivity = "graph", kbet = "kBet")
+
+p_dist$data$metric2 <- recode(p_dist$data$metric2, cms.kmin = "cms_kmin", cms.bmin = "cms_bmin",
+       cms.batch_id = "cms_default", graph.connectivity = "graph", kbet = "kBet")
+
+p_dist$layers[[3]]$data$metric <- recode(p_dist$layers[[3]]$data$metric,
+                                              cms.kmin = "cms_kmin", 
+                                              cms.bmin = "cms_bmin", 
+                                              cms.batch_id = "cms_default", 
+                                              graph.connectivity = "graph", 
+                                              kbet = "kBet")
+
+p_dist$layers[[4]]$data$metric <- recode(p_dist$layers[[3]]$data$metric,
+                                              cms.kmin = "cms_kmin", 
+                                              cms.bmin = "cms_bmin", 
+                                              cms.batch_id = "cms_default", 
+                                              graph.connectivity = "graph", 
+                                              kbet = "kBet")
+
+p_dist$layers[[4]]$geom_params$label.fontsize <- 12
+
+p_dist
+```
+
+---
+class: center
+
+# Scaling and Sensitivity
+
+--
+<br>
+
+.pull-left[
+```{r echo=FALSE,warning=FALSE, message=FALSE, fig.width=6, fig.height = 6}
+
+correlation_scaling <- readRDS("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figure_obj/scaling_cor.rds")
+correlation_scaling <- correlation_scaling + theme_ipsum(base_family = 'Helvetica')
+
+p1 <- correlation_scaling + 
+  theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 17,
+                    plot_margin = margin(1, 1, 1, 1),
+                    strip_text_size = 16,
+                    base_size = 14) +
+  theme(axis.text.x = element_text(size=16, angle=45, hjust = 1),
+        legend.position="none",
+        axis.text.y = element_text(size=14)) +
+  ggtitle("Scaling")
+p1$data$metric <- recode(p1$data$metric, cms.kmin = "cms_kmin", cms.bmin = "cms_bmin",
+       cms.batch_id = "cms_default", graph.connectivity = "graph", kbet = "kBet")
+
+p1
+```
+]
+
+--
+
+.pull-right[
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.width=6, fig.height = 6}
+limit_scaling <- readRDS("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figure_obj/scaling_limits.rds")
+limit_scaling <- limit_scaling + theme_ipsum(base_family = 'Helvetica')
+p2 <- limit_scaling + 
+  theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 17,
+                    plot_margin = margin(1, 1, 1, 1),
+                    strip_text_size = 16,
+                    base_size = 14) +
+  theme(axis.text.x = element_text(size=16, angle=45, hjust = 1),
+        legend.position="none",
+        axis.text.y = element_text(size=14)) +
+  ggtitle("Batch detection limits")
+p2$data$metric <- recode(p2$data$metric, cms.kmin = "cms_kmin", cms.bmin = "cms_bmin",
+       cms.batch_id = "cms_default", graph.connectivity = "graph", kbet = "kBet")
+
+p2
+```
+]
+
+
+---
+class: center
+
+# Task 4: Imbalanced batches
+<br>
+<br>
+<br>
+
+### *Aim: Reaction of metrics to imbalance cell type abundance within the same dataset*
+
+--
+
+Test sensitivity towards imbalance of cell type abundance
+
+---
+class: 
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+
+f <- "figure_obj/unbalanced_plotly.html"
+
+htmltools::tags$iframe(
+    src=f,
+    width="98%", 
+    height="520",
+    scrolling="no", 
+    seamless="seamless", 
+    frameBorder="0"
+  )
+```
+
+---
+class: center
+
+# Imbalanced batch effects
+<br>
+```{r echo=FALSE,warning=FALSE, message=FALSE, fig.width=13, fig.height = 7}
+
+imb_bat <- readRDS("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figure_obj/unbalanced_moderate_batch_effect.rds")
+imb_bat <- imb_bat + theme_ipsum(base_family = 'Helvetica')
+imb_bat$layers[[3]]$data$metric <- recode(imb_bat$layers[[3]]$data$metric,
+                                              cms.kmin = "cms_kmin", 
+                                              cms.bmin = "cms_bmin", 
+                                              cms.batch_id = "cms_default", 
+                                              graph.connectivity = "graph", 
+                                              kbet = "kBet")
+
+
+imb_bat <- imb_bat + 
+  xlab("batch logFC factor") + 
+  scale_y_continuous(breaks=c(-0.3, 0, 0.1)) +
+  scale_x_continuous(breaks = c(0,0.5, 1), labels = c("0", "50", "100")) +
+  xlab("[%] unbalanced") +
+  theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 17,
+                    plot_margin = margin(1, 1, 1, 1),
+                    strip_text_size = 16,
+                    base_size = 14) +
+  theme(axis.text.x = element_text(size=14),
+        axis.text.y = element_text(size=14),
+            plot.title = element_blank())
+
+imb_bat$data$metric <- recode(imb_bat$data$metric, cms.kmin = "cms_kmin", cms.bmin = "cms_bmin",
+       cms.batch_id = "cms_default", graph.connectivity = "graph", kbet = "kBet")
+
+imb_bat$layers[[3]]$geom_params$label.fontsize <- 12
+imb_bat$facet$params$ncol <- 6
+imb_bat
+```
+
+---
+class: center
+
+# Imbalanced batch effects
+
+<br>
+<br>
+
+```{r echo=FALSE,warning=FALSE, message=FALSE, fig.width=12, fig.height = 5.5}
+
+unb_limit <- readRDS("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figure_obj/unbalanced_limits_lolli.rds")
+unb_limit <- unb_limit + theme_ipsum(base_family = 'Helvetica')
+
+p2 <- unb_limit + 
+  theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 17,
+                    plot_margin = margin(0.5, 0.5, 0.5, 0.5),
+                    strip_text_size = 16,
+                    base_size = 15) +
+  ylab('imbalance limit') +
+  theme(legend.position = "top",
+        axis.text.y = element_text(size=14),
+        axis.text.x = element_blank(),
+        strip.text.x = element_text(size = 14, angle=90, hjust = 0.5))  
+
+# p2$data$metric <- recode(p2$data$metric, cms.kmin = "cms_kmin", cms.bmin = "cms_bmin",
+#        cms.batch_id = "cms_default", graph.connectivity = "graph", kbet = "kBet")
+
+p2$layers[[2]]$aes_params$size <- 6
+p2
+```
+
+---
+class: center, inverse, middle
+
+# Summary
+
+---
+class: center
+
+# Summary
+
+
+```{r echo=FALSE,warning=FALSE, message=FALSE, fig.width=11.5, fig.height = 7.5}
+
+summary <- readRDS("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figure_obj/sum_tab.rds")
+summary <- summary + theme_ipsum(base_family = 'Helvetica')
+
+theme_summary <- theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 17,
+                    strip_text_size = 15,
+                    base_size = 16) +
+        theme(
+            legend.position="right",
+            plot.title = element_text(size=17, hjust = 0.5),
+            plot.subtitle = element_text(size=12, hjust = 0.5),
+            axis.text.x = element_text(size=15),
+            panel.spacing = unit(1, "lines")
+        )
+
+p1 <- summary + theme_summary 
+
+p1$data$metric <- recode(p1$data$metric, graph.connectivity = "graph", kbet = "kBet")
+
+p1$layers[[1]]$aes_params$size <- 13 
+p1
+```
+---
+class: center, inverse, middle
+
+---
+class: center, middle, inverse
+
+# 2. *Omni_batch*: open and continuous benchmarking of single cell batch correction methods
+
+---
+class: centre
+
+# State of the art
+
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics(paste0(fig_path, "/benchmarks.png"))
+```
+
+---
+class: centre
+
+# Benchmark A
+
+
+```{r echo=FALSE, out.height="80%", out.width="80%"}
+knitr::include_graphics(paste0(fig_path, "/res_bench1.png"))
+```
+
+---
+class: centre
+
+# Benchmark B
+
+
+```{r echo=FALSE, out.height="80%", out.width="80%"}
+knitr::include_graphics(paste0(fig_path, "/res_bench2.png"))
+```
+
+---
+class: centre
+
+# Omni-benchmark
+
+```{r echo=FALSE, out.height="95%", out.width="95%"}
+knitr::include_graphics(paste0(fig_path, "/omni_1.png"))
+```
+
+---
+class: centre
+
+# Omni-benchmark
+
+```{r echo=FALSE, out.height="95%", out.width="95%"}
+knitr::include_graphics(paste0(fig_path, "/omni_2.png"))
+```
+
+---
+class: centre
+
+# Omni-benchmark
+
+```{r echo=FALSE, out.height="95%", out.width="95%"}
+knitr::include_graphics(paste0(fig_path, "/omni_3.png"))
+```
+
+---
+class: centre
+
+# Omni-benchmark
+
+```{r echo=FALSE, out.height="95%", out.width="95%"}
+knitr::include_graphics(paste0(fig_path, "/omni_4.png"))
+```
+
+---
+class: centre
+
+# Omni-benchmark
+
+```{r echo=FALSE, out.height="95%", out.width="95%"}
+knitr::include_graphics(paste0(fig_path, "/omni_5.png"))
+```
+
+---
+class: centre
+
+# Omni-benchmark
+
+```{r echo=FALSE, out.height="95%", out.width="95%"}
+knitr::include_graphics(paste0(fig_path, "/omni_6.png"))
+```
+
+---
+
+class: center, middle, inverse
+
+# 3. Teaching and course work
+
+---
+class: 
+
+# Teaching and course work
+
+```{r echo=FALSE, out.height="95%", out.width="95%"}
+knitr::include_graphics(paste0(fig_path, "/teaching.png"))
+```
+---
+---
+class: center, middle, inverse
+
+# Extra slides
+
+---
+class:
+
+# Local Inverse Simpson Index (lisi)
+
+- neighborhood diversity
+
+--
+
+- effective number of batches
+
+--
+
+- neighbor weighting:
+  + euclidean distance --> wisi
+  + no weighting --> isi
+  + Gaussian kernel based weighting --> lisi
+
+
+$$\frac{1}{\sum_{b=1}^{B} p(b)}$$
+
+---
+class: center
+
+# k-nearest neighbour batch effect test (kBet)
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/kbet.png")
+```
+(Buttner et. al., 2019) 
+---
+class: center
+
+# Mixing metric (mm)
+
+```{r echo=FALSE, out.height="100%", out.width="100%"}
+knitr::include_graphics("/home/almut/Dokumente/Phd/presentation/CellMixS_final/figures/mm.png")
+```
+
+---

@@ -1,0 +1,216 @@
+---
+title: "Untitled"
+author: "Almut Lütge"
+date: "30 11 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Generate plotly plots related to the mixing metric benchmark
+
+
+```{r libs}
+suppressPackageStartupMessages({
+  library(scater)
+  library(CellMixS)
+  library(purrr)
+  library(tidyr)
+  library(dplyr)
+  library(gridExtra)
+  library(scran)
+  library(jcolors)
+  library(ggpubr)
+  library(hrbrthemes)
+  library(magrittr)
+  library(RColorBrewer)
+    library(plotly)
+})
+```
+
+Data
+```{r data}
+data_path <- "/run/user/1000/gvfs/sftp:host=imlsportmacquarie.uzh.ch/home/aluetg/batch_characterization/mixing_benchmark/src/datasets/"
+sce_all <- c('sim_csf_patient_2__1_sce', 'sim_pbmc2_pat_2__1_sce', 'sim_pbmc_roche_1.2__1_sce', 'sim_pbmc2_media_1__1_sce', 'sim_pbmc_roche_0.3__1_sce', 'sim_pbmc_roche_0.7__1_sce', 'sim_csf_media_1__1_sce', 'sim_hca_0.4__1_sce', 'sim_csf_patient_0.4__1_sce', 'sim_cellbench_0.4__1_sce', 'sim_hca_0.9__1_sce', 'sim_pbmc2_pat_4__1_sce', 'sim_pbmc2_media_0.9__1_sce', 'sim_csf_patient_0__0_sce', 'sim_cellbench_2__1_sce', 'sim_pbmc_roche_0__0_sce', 'sim_cellbench_0.8__1_sce', 'sim_csf_patient_0.8__1_sce', 'sim_pbmc_roche_1__1_sce', 'sim_csf_patient_0.5__1_sce', 'sim_csf_media_0.5__1_sce', 'sim_pbmc2_pat_0.5__1_sce', 'sim_cellbench_1.5__1_sce', 'sim_pbmc_roche_0.8__1_sce','sim_csf_media_1.5__1_sce', 'sim_csf_patient_0.6__1_sce', 'sim_pbmc2_media_1.2__1_sce', 'sim_csf_patient_1.2__1_sce', 'sim_cellbench_4__1_sce', 'sim_csf_media_4__1_sce', 'sim_pbmc2_media_0.3__1_sce', 'sim_csf_patient_1.5__1_sce', 'sim_cellbench_0.6__1_sce', 'sim_pbmc_roche_0.6__1_sce', 'sim_csf_media_2__1_sce', 'sim_csf_media_0.4__1_sce', 'sim_hca_0.3__1_sce','sim_hca_2__1_sce', 'sim_pbmc2_pat_1__1_sce', 'sim_csf_media_1.2__1_sce', 'sim_pbmc2_pat_0.3__1_sce', 'sim_hca_0.8__1_sce', 'sim_hca_0.5__1_sce', 'sim_pbmc2_pat_0.8__1_sce', 'sim_csf_patient_0.9__1_sce', 'sim_csf_media_0.8__1_sce', 'sim_cellbench_0.7__1_sce', 'sim_csf_patient_1__1_sce', 'sim_cellbench_0.9__1_sce', 'sim_csf_media_0.7__1_sce', 'sim_cellbench_1.2__1_sce', 'sim_pbmc2_pat_0.7__1_sce', 'sim_pbmc2_media_0.8__1_sce', 'sim_cellbench_0__0_sce', 'sim_hca_0__0_sce', 'sim_pbmc_roche_4__1_sce', 'sim_csf_media_0.3__1_sce', 'sim_hca_0.6__1_sce', 'sim_pbmc_roche_0.4__1_sce', 'sim_pbmc_roche_0.9__1_sce', 'sim_pbmc2_media_0.6__1_sce', 'sim_pbmc2_media_0.5__1_sce', 'sim_pbmc2_media_4__1_sce', 'sim_cellbench_1__1_sce', 'sim_csf_patient_0.7__1_sce', 'sim_pbmc_roche_1.5__1_sce', 'sim_pbmc2_pat_1.2__1_sce', 'sim_csf_media_0.9__1_sce', 'sim_pbmc2_media_0.4__1_sce', 'sim_pbmc2_pat_0__0_sce', 'sim_csf_patient_4__1_sce', 'sim_pbmc2_media_2__1_sce', 'sim_cellbench_0.3__1_sce', 'sim_pbmc2_pat_1.5__1_sce', 'sim_pbmc2_media_0.7__1_sce', 'sim_csf_media_0__0_sce','sim_cellbench_0.5__1_sce', 'sim_hca_1__1_sce', 'sim_pbmc2_pat_0.6__1_sce', 'sim_pbmc_roche_2__1_sce', 'sim_hca_1.5__1_sce', 'sim_hca_1.2__1_sce', 'sim_pbmc2_pat_0.9__1_sce', 'sim_pbmc2_media_0__0_sce', 'sim_pbmc2_media_1.5__1_sce','sim_hca_0.7__1_sce', 'sim_csf_media_0.6__1_sce', 'sim_hca_4__1_sce', 'sim_pbmc2_pat_0.4__1_sce','sim_csf_patient_0.3__1_sce', 'sim_pbmc_roche_0.5__1_sce')
+
+sce_whole_name <- grep(paste(c("csf_pat"), collapse="|"),
+     sce_all, value=TRUE)
+
+#levels to plot
+lev <- c("0", "0.3", "0.5", "0.6", "0.7", 
+         "0.8", "0.9", "1", "1.2", "1.5", "2", "4")
+lev_ <- paste0("_", lev, "__")
+sce_whole_name <- grep(paste(lev_, collapse="|"), sce_whole_name, value = TRUE)
+
+sce_name <- gsub("^sim_", "", sce_whole_name) %>% 
+    gsub("_[0-9].*", "", .) %>% unique()
+
+sce_sim_list <- lapply(sce_name, function(dataset){
+    sim_vec <- sce_whole_name[grepl(dataset, sce_whole_name)]
+}) %>% set_names(sce_name)
+
+sce_list <- lapply(sce_name, function(dataset){
+    sim_vec <- paste0(data_path, sce_whole_name, ".rds") %>%
+        set_names(sce_sim_list[[dataset]])
+}) %>% set_names(sce_name)
+
+
+###Unbalanced
+un_name <- c('un_0.3_sim_csf_patient_0__0_sce', 'un_0.4_sim_csf_patient_1__1_sce', 'un_0.5_sim_csf_patient_0.3__1_sce','un_0.3_sim_csf_patient_1__1_sce', 'un_0_sim_csf_patient_0__0_sce', 'un_0.1_sim_csf_patient_0.3__1_sce', 'un_0.2_sim_csf_patient_1__1_sce', 'un_0.7_sim_csf_patient_1__1_sce', 'un_0.5_sim_csf_patient_0__0_sce', 'un_0_sim_csf_patient_1__1_sce', 'un_1_sim_csf_patient_1__1_sce', 'un_0.3_sim_csf_patient_0__0_sce', 'un_0.6_sim_csf_patient_0.3__1_sce', 'un_0.2_sim_csf_patient_0__0_sce', 'un_1_sim_csf_patient_0__0_sce', 'un_0.7_sim_csf_patient_0.3__1_sce', 'un_0.4_sim_csf_patient_0__0_sce', 'un_0_sim_csf_patient_0.3__1_sce', 'un_0.3_sim_csf_patient_0.3__1_sce', 'un_0.9_sim_csf_patient_0__0_sce', 'un_0.1_sim_csf_patient_1__1_sce','un_0.9_sim_csf_patient_0.3__1_sce', 'un_0.8_sim_csf_patient_1__1_sce', 'un_0.6_sim_csf_patient_0__0_sce', 'un_1_sim_csf_patient_0.3__1_sce', 'un_0.4_sim_csf_patient_0.3__1_sce','un_0.1_sim_csf_patient_0__0_sce', 'un_0.5_sim_csf_patient_1__1_sce', 'un_0.8_sim_csf_patient_0__0_sce','un_0.6_sim_csf_patient_1__1_sce', 'un_0.9_sim_csf_patient_1__1_sce', 'un_0.8_sim_csf_patient_0.3__1_sce','un_0.2_sim_csf_patient_0.3__1_sce')
+             
+           
+un_whole_name <- unlist(c(strsplit(un_name, ","))) %>% 
+    grep("_0.3__1_sce$", ., value = TRUE)
+
+un_name <- gsub("^un_[0-9].*_sim_", "", un_whole_name) %>% 
+    gsub("__[0-9]_sce.*", "", .) %>% unique()
+
+un_sim_list <- lapply(un_name, function(dataset){
+    sim_vec <- un_whole_name[grepl(paste0(dataset, "_"), un_whole_name)]
+}) %>% set_names(un_name)
+
+un_list <- lapply(un_name, function(dataset){
+    sim_vec <- un_whole_name[grepl(dataset, un_whole_name)]
+    sim_vec <- gsub("^un_", "", sim_vec) %>% gsub("_sim.*", "", .) %>% 
+        as.numeric()
+}) %>% set_names(un_name)
+
+
+un_sim <- lapply(un_name, function(dataset){
+  sim_vec <- paste0(data_path, un_sim_list[[dataset]], ".rds") %>%
+             set_names(un_sim_list[[dataset]])
+}) %>% set_names(un_name)
+
+
+#random labels
+random_sce <- readRDS("/run/user/1000/gvfs/sftp:host=imlsportmacquarie.uzh.ch/home/aluetg/batch_characterization/mixing_benchmark/src/datasets/csf_patient_random.rds")
+# random_sce <- readRDS("/run/user/1000/gvfs/sftp:host=imlsportmacquarie.uzh.ch/home/aluetg/batch_characterization/mixing_benchmark/src/datasets/pbmc_roche.rds")
+
+cols_data <-c(c(jcolors('pal6'),jcolors('pal8'))[c(1,8,14,5,2:4,6,7,9:13,15:20)],jcolors('pal4'))
+names(cols_data) <- c()
+
+cols <-c(c(jcolors('pal6'),jcolors('pal8'), jcolors('pal7'))[c(1,12,18,25,27,2,4,7,3,6,8,14,9,20)],jcolors('pal4'))
+names(cols) <- c()
+```
+
+### Generate fig objects scaling simulation
+```{r fig_obj scaling, fig.width = 11, fig.height = 9}
+
+dataset <- "csf_patient"
+tsne_long <- lapply(sce_sim_list[[dataset]], function(sim_name){
+      sim_start <- gsub('__[0-9]_sce','', sim_name)
+      sim <- gsub('[A-z_]', '', sim_start)
+      sce <- readRDS(sce_list[[dataset]][[sim_name]])
+      sce <- runTSNE(sce, exprs_values = "counts")
+      tab <- data.frame("tsne1" = reducedDims(sce)[["TSNE"]][,1],
+                          "tsne2" = reducedDims(sce)[["TSNE"]][,2],
+                          "batch" = as.factor(sce$batch_id),
+                          "batch_size" = sim)
+}) %>% bind_rows()
+        
+cols_batch <- cols_data[1:length(levels(as.factor(tsne_long$batch)))] %>% 
+    set_names(levels(as.factor(tsne_long$batch)))
+
+
+p <- ggplot(tsne_long, aes(x = tsne1, y = tsne2, color = batch, frame = batch_size)) +
+    geom_point(size = 0.6, alpha = 0.8) +
+    scale_color_manual(values = cols_batch) +
+    theme_ipsum(base_family = 'Helvetica',
+                strip_text_face = "bold",
+                axis_title_size = 14) +
+    theme(
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank()) +
+        ggtitle("Batch size factor")
+saveRDS(p, paste0("/home/almut/Dokumente/Phd/presentation/committee_2/figure_obj/batch_size_plotly.rds"))
+fig <- ggplotly(p)
+
+htmlwidgets::saveWidget(widget = fig, file = paste0("/home/almut/Dokumente/Phd/presentation/committee_2/figure_obj/batch_size_plotly.html"))
+fig
+
+
+```
+
+
+### Generate fig objects scaling simulation
+```{r fig_obj unbalanced, fig.width = 11, fig.height = 9}
+
+dataset <- un_name 
+
+
+tsne_long <- lapply(un_sim_list[[dataset]], function(sim_name){
+        un_start <- gsub('_sim.*','', sim_name)
+        un <- gsub('un_', '', un_start)
+        sce <- readRDS(un_sim[[dataset]][[sim_name]])
+        sce <- runTSNE(sce, exprs_values = "counts")
+        tab <- data.frame("tsne1" = reducedDims(sce)[["TSNE"]][,1],
+                          "tsne2" = reducedDims(sce)[["TSNE"]][,2],
+                          "batch" = as.factor(sce$batch_id),
+                          "celltype" = as.factor(sce$cluster_id),
+                          "unbalanced" = un)
+}) %>% bind_rows()
+        
+cols_batch <- cols_data[1:length(levels(as.factor(tsne_long$batch)))] %>% 
+  set_names(levels(as.factor(tsne_long$batch)))
+
+
+p <- ggplot(tsne_long, aes(x = tsne1, y = tsne2, color = batch, frame = unbalanced)) +
+    geom_point(size = 0.6, alpha = 0.8) +
+    scale_color_manual(values = cols_batch) +
+    theme_ipsum(base_family = 'Helvetica',
+                strip_text_face = "bold",
+                axis_title_size = 14) +
+    theme(
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank()) +
+        ggtitle("Imbalanced batch effects")
+
+saveRDS(p, paste0("/home/almut/Dokumente/Phd/presentation/committee_2/figure_obj/unbalanced_plotly.rds"))
+fig <- ggplotly(p)
+
+htmlwidgets::saveWidget(fig, paste0("/home/almut/Dokumente/Phd/presentation/committee_2/figure_obj/unbalanced_plotly.html"))
+  
+fig
+
+```
+
+## Random batch labels
+
+```{r random label, fig.width = 11, fig.height = 9}
+random_cols <- colData(random_sce) %>% as_tibble() %>% select(starts_with("batch"))
+colnames(random_cols) <- gsub("batch", "", colnames(random_cols))
+random <- cbind(random_cols, reducedDims(random_sce)[["TSNE"]])
+random <- random %>% rename("tsne1" = "1", "tsne2" = "2") 
+#random <- random %>% select(-"Var.1")
+
+random_long <- random %>% pivot_longer(-c(tsne1, tsne2), names_to = "randomness", values_to = "batch")
+
+cols_batch <- cols_data[1:length(levels(as.factor(random_long$batch)))] %>% 
+        set_names(levels(as.factor(random_long$batch)))
+
+random_long$randomness <- as.numeric(random_long$randomness)
+
+p <- ggplot(random_long, aes(x = tsne1, y = tsne2, color = batch, frame = randomness)) +
+        geom_point(size = 0.6, alpha = 0.8) +
+        scale_color_manual(values = cols_batch) +
+        theme_ipsum(base_family = 'Helvetica',
+                    strip_text_face = "bold",
+                    axis_title_size = 14) +
+        theme(
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank()) +
+        ggtitle("Batch label permutation")
+
+saveRDS(p, paste0("/home/almut/Dokumente/Phd/presentation/committee_2/figure_obj/random_plotly.rds"))
+
+fig <- ggplotly(p)
+
+htmlwidgets::saveWidget(fig, paste0("/home/almut/Dokumente/Phd/presentation/committee_2/figure_obj/random_plotly.html"))
+
+fig
+
+```
+
